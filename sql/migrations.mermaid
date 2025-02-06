@@ -1,0 +1,127 @@
+erDiagram
+    employees ||--o{ employee_positions : has
+    employees ||--o{ employee_personal_details : has
+    employees ||--o{ employee_pension_enrollments : has
+    employees ||--o{ payroll_records : has
+
+    departments ||--o{ employee_positions : has
+
+    positions ||--o{ employee_positions : has
+
+    employee_positions ||--o{ time_entries : has
+    employee_positions ||--o{ payroll_details : has
+
+    pay_periods ||--o{ time_entries : contains
+    pay_periods ||--o{ payroll_records : has
+
+    pension_providers ||--o{ pension_plans : offers
+
+    pension_plans ||--o{ employee_pension_enrollments : has
+
+    payroll_records ||--o{ payroll_details : contains
+    payroll_records ||--o{ pension_contributions : has
+
+    employee_pension_enrollments ||--o{ pension_contributions : generates
+
+    employees {
+        SERIAL employee_id PK
+        VARCHAR first_name
+        VARCHAR last_name
+        VARCHAR email
+        DATE hire_date
+        VARCHAR tax_id
+    }
+
+    departments {
+        SERIAL department_id PK
+        VARCHAR department_name
+        VARCHAR cost_center
+    }
+
+    positions {
+        SERIAL position_id PK
+        VARCHAR title
+        VARCHAR pay_grade
+        BOOLEAN is_exempt
+    }
+
+    employee_positions {
+        SERIAL employee_position_id PK
+        INTEGER employee_id FK
+        INTEGER position_id FK
+        INTEGER department_id FK
+        INTEGER manager_id FK
+        BOOLEAN is_primary_position
+        NUMERIC hourly_rate
+        NUMERIC annual_salary
+    }
+
+    pay_periods {
+        SERIAL pay_period_id PK
+        DATE start_date
+        DATE end_date
+        DATE pay_date
+        VARCHAR period_type
+    }
+
+    time_entries {
+        SERIAL time_entry_id PK
+        INTEGER employee_position_id FK
+        INTEGER pay_period_id FK
+        DATE work_date
+        NUMERIC hours_worked
+        NUMERIC overtime_hours
+    }
+
+    pension_providers {
+        SERIAL provider_id PK
+        VARCHAR provider_name
+        VARCHAR provider_code
+    }
+
+    pension_plans {
+        SERIAL plan_id PK
+        INTEGER provider_id FK
+        VARCHAR plan_name
+        NUMERIC employer_match_percentage
+    }
+
+    employee_pension_enrollments {
+        SERIAL enrollment_id PK
+        INTEGER employee_id FK
+        INTEGER plan_id FK
+        NUMERIC employee_contribution_percentage
+        DATE enrollment_date
+    }
+
+    payroll_records {
+        SERIAL payroll_record_id PK
+        INTEGER employee_id FK
+        INTEGER pay_period_id FK
+        NUMERIC gross_pay
+        NUMERIC net_pay
+    }
+
+    payroll_details {
+        SERIAL payroll_detail_id PK
+        INTEGER payroll_record_id FK
+        INTEGER employee_position_id FK
+        VARCHAR earning_type
+        NUMERIC amount
+    }
+
+    pension_contributions {
+        SERIAL contribution_id PK
+        INTEGER enrollment_id FK
+        INTEGER payroll_record_id FK
+        NUMERIC employee_contribution
+        NUMERIC employer_contribution
+    }
+
+    employee_personal_details {
+        SERIAL personal_details_id PK
+        INTEGER employee_id FK
+        DATE date_of_birth
+        VARCHAR address_line1
+        VARCHAR city
+    }

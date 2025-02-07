@@ -1,5 +1,5 @@
 -- Employees table
-CREATE TABLE employees (
+CREATE TABLE Employees (
     employee_id SERIAL PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
@@ -10,14 +10,14 @@ CREATE TABLE employees (
 );
 
 -- Departments table
-CREATE TABLE departments (
+CREATE TABLE Departments (
     department_id SERIAL PRIMARY KEY,
     department_name VARCHAR(100) NOT NULL,
     cost_center VARCHAR(20) NOT NULL
 );
 
 -- Positions table
-CREATE TABLE positions (
+CREATE TABLE Positions (
     position_id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     pay_grade VARCHAR(10) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE positions (
 );
 
 -- Employee positions table
-CREATE TABLE employee_positions (
+CREATE TABLE EmployeePositions (
     employee_position_id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
     position_id INTEGER NOT NULL,
@@ -36,14 +36,14 @@ CREATE TABLE employee_positions (
     end_date DATE,
     hourly_rate NUMERIC(10,2),
     annual_salary NUMERIC(12,2),
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
-    FOREIGN KEY (position_id) REFERENCES positions(position_id),
-    FOREIGN KEY (department_id) REFERENCES departments(department_id),
-    FOREIGN KEY (manager_id) REFERENCES employees(employee_id)
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (position_id) REFERENCES Positions(position_id),
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id),
+    FOREIGN KEY (manager_id) REFERENCES Employees(employee_id)
 );
 
 -- Pay periods table
-CREATE TABLE pay_periods (
+CREATE TABLE PayPeriods (
     pay_period_id SERIAL PRIMARY KEY,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -52,19 +52,19 @@ CREATE TABLE pay_periods (
 );
 
 -- Time entries table
-CREATE TABLE time_entries (
+CREATE TABLE TimeEntries (
     time_entry_id SERIAL PRIMARY KEY,
     employee_position_id INTEGER NOT NULL,
     pay_period_id INTEGER NOT NULL,
     work_date DATE NOT NULL,
     hours_worked NUMERIC(5,2) NOT NULL,
     overtime_hours NUMERIC(5,2) DEFAULT 0,
-    FOREIGN KEY (employee_position_id) REFERENCES employee_positions(employee_position_id),
-    FOREIGN KEY (pay_period_id) REFERENCES pay_periods(pay_period_id)
+    FOREIGN KEY (employee_position_id) REFERENCES EmployeePositions(employee_position_id),
+    FOREIGN KEY (pay_period_id) REFERENCES PayPeriods(pay_period_id)
 );
 
 -- Pension providers table
-CREATE TABLE pension_providers (
+CREATE TABLE PensionProviders (
     provider_id SERIAL PRIMARY KEY,
     provider_name VARCHAR(100) NOT NULL,
     provider_code VARCHAR(50) NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE pension_providers (
 );
 
 -- Pension plans table
-CREATE TABLE pension_plans (
+CREATE TABLE PensionPlans (
     plan_id SERIAL PRIMARY KEY,
     provider_id INTEGER NOT NULL,
     plan_name VARCHAR(100) NOT NULL,
@@ -83,11 +83,11 @@ CREATE TABLE pension_plans (
     maximum_contribution_percentage NUMERIC(5,2),
     employer_match_percentage NUMERIC(5,2),
     employer_match_limit NUMERIC(5,2),
-    FOREIGN KEY (provider_id) REFERENCES pension_providers(provider_id)
+    FOREIGN KEY (provider_id) REFERENCES PensionProviders(provider_id)
 );
 
 -- Employee pension enrollments table
-CREATE TABLE employee_pension_enrollments (
+CREATE TABLE EmployeePensionEnrollments (
     enrollment_id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
     plan_id INTEGER NOT NULL,
@@ -96,12 +96,12 @@ CREATE TABLE employee_pension_enrollments (
     enrollment_date DATE NOT NULL,
     opt_out_date DATE,
     salary_sacrifice BOOLEAN NOT NULL DEFAULT false,
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
-    FOREIGN KEY (plan_id) REFERENCES pension_plans(plan_id)
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (plan_id) REFERENCES PensionPlans(plan_id)
 );
 
 -- Payroll records table
-CREATE TABLE payroll_records (
+CREATE TABLE PayrollRecords (
     payroll_record_id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
     pay_period_id INTEGER NOT NULL,
@@ -111,12 +111,12 @@ CREATE TABLE payroll_records (
     total_taxes NUMERIC(12,2) NOT NULL,
     payment_method VARCHAR(20) NOT NULL,
     payment_status VARCHAR(20) NOT NULL,
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
-    FOREIGN KEY (pay_period_id) REFERENCES pay_periods(pay_period_id)
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (pay_period_id) REFERENCES PayPeriods(pay_period_id)
 );
 
 -- Payroll details table
-CREATE TABLE payroll_details (
+CREATE TABLE PayrollDetails (
     payroll_detail_id SERIAL PRIMARY KEY,
     payroll_record_id INTEGER NOT NULL,
     employee_position_id INTEGER NOT NULL,
@@ -125,12 +125,12 @@ CREATE TABLE payroll_details (
     hours NUMERIC(5,2),
     rate NUMERIC(10,2),
     pension_eligible BOOLEAN NOT NULL DEFAULT true,
-    FOREIGN KEY (payroll_record_id) REFERENCES payroll_records(payroll_record_id),
-    FOREIGN KEY (employee_position_id) REFERENCES employee_positions(employee_position_id)
+    FOREIGN KEY (payroll_record_id) REFERENCES PayrollRecords(payroll_record_id),
+    FOREIGN KEY (employee_position_id) REFERENCES EmployeePositions(employee_position_id)
 );
 
 -- Pension contributions table
-CREATE TABLE pension_contributions (
+CREATE TABLE PensionContributions (
     contribution_id SERIAL PRIMARY KEY,
     enrollment_id INTEGER NOT NULL,
     payroll_record_id INTEGER NOT NULL,
@@ -139,13 +139,13 @@ CREATE TABLE pension_contributions (
     contribution_date DATE NOT NULL,
     reporting_status VARCHAR(20) NOT NULL,
     reporting_reference VARCHAR(50),
-    FOREIGN KEY (enrollment_id) REFERENCES employee_pension_enrollments(enrollment_id),
-    FOREIGN KEY (payroll_record_id) REFERENCES payroll_records(payroll_record_id)
+    FOREIGN KEY (enrollment_id) REFERENCES EmployeePensionEnrollments(enrollment_id),
+    FOREIGN KEY (payroll_record_id) REFERENCES PayrollRecords(payroll_record_id)
 );
 
 -- HR-specific tables follow the same conversion pattern
 -- Employee personal details table
-CREATE TABLE employee_personal_details (
+CREATE TABLE EmployeePersonalDetails (
     personal_details_id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
     date_of_birth DATE NOT NULL,
@@ -162,12 +162,12 @@ CREATE TABLE employee_personal_details (
     mobile_phone VARCHAR(20),
     emergency_contact_name VARCHAR(100),
     emergency_contact_phone VARCHAR(20),
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id)
 );
 
 -- Additional HR tables (qualifications, training, etc.) would follow the same conversion pattern
 
 -- Enable row-level security for sensitive tables
-ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
-ALTER TABLE employee_personal_details ENABLE ROW LEVEL SECURITY;
-ALTER TABLE payroll_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE Employees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE EmployeePersonalDetails ENABLE ROW LEVEL SECURITY;
+ALTER TABLE PayrollRecords ENABLE ROW LEVEL SECURITY;

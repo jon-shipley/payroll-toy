@@ -1,29 +1,29 @@
 erDiagram
-    employees ||--o{ employee_positions : has
-    employees ||--o{ employee_personal_details : has
-    employees ||--o{ employee_pension_enrollments : has
-    employees ||--o{ payroll_records : has
+    Employees ||--o{ EmployeePositions : has
+    Employees ||--o{ EmployeePersonalDetails : has
+    Employees ||--o{ EmployeePensionEnrollments : has
+    Employees ||--o{ PayrollRecords : has
 
-    departments ||--o{ employee_positions : has
+    Departments ||--o{ EmployeePositions : has
 
-    positions ||--o{ employee_positions : has
+    Positions ||--o{ EmployeePositions : has
 
-    employee_positions ||--o{ time_entries : has
-    employee_positions ||--o{ payroll_details : has
+    EmployeePositions ||--o{ TimeEntries : has
+    EmployeePositions ||--o{ PayrollDetails : has
 
-    pay_periods ||--o{ time_entries : contains
-    pay_periods ||--o{ payroll_records : has
+    PayPeriods ||--o{ TimeEntries : contains
+    PayPeriods ||--o{ PayrollRecords : has
 
-    pension_providers ||--o{ pension_plans : offers
+    PensionProviders ||--o{ PensionPlans : offers
 
-    pension_plans ||--o{ employee_pension_enrollments : has
+    PensionPlans ||--o{ EmployeePensionEnrollments : has
 
-    payroll_records ||--o{ payroll_details : contains
-    payroll_records ||--o{ pension_contributions : has
+    PayrollRecords ||--o{ PayrollDetails : contains
+    PayrollRecords ||--o{ PensionContributions : has
 
-    employee_pension_enrollments ||--o{ pension_contributions : generates
+    EmployeePensionEnrollments ||--o{ PensionContributions : generates
 
-    employees {
+    Employees {
         SERIAL employee_id PK
         VARCHAR first_name
         VARCHAR last_name
@@ -32,20 +32,20 @@ erDiagram
         VARCHAR tax_id
     }
 
-    departments {
+    Departments {
         SERIAL department_id PK
         VARCHAR department_name
         VARCHAR cost_center
     }
 
-    positions {
+    Positions {
         SERIAL position_id PK
         VARCHAR title
         VARCHAR pay_grade
         BOOLEAN is_exempt
     }
 
-    employee_positions {
+    EmployeePositions {
         SERIAL employee_position_id PK
         INTEGER employee_id FK
         INTEGER position_id FK
@@ -56,7 +56,7 @@ erDiagram
         NUMERIC annual_salary
     }
 
-    pay_periods {
+    PayPeriods {
         SERIAL pay_period_id PK
         DATE start_date
         DATE end_date
@@ -64,7 +64,7 @@ erDiagram
         VARCHAR period_type
     }
 
-    time_entries {
+    TimeEntries {
         SERIAL time_entry_id PK
         INTEGER employee_position_id FK
         INTEGER pay_period_id FK
@@ -73,20 +73,20 @@ erDiagram
         NUMERIC overtime_hours
     }
 
-    pension_providers {
+    PensionProviders {
         SERIAL provider_id PK
         VARCHAR provider_name
         VARCHAR provider_code
     }
 
-    pension_plans {
+    PensionPlans {
         SERIAL plan_id PK
         INTEGER provider_id FK
         VARCHAR plan_name
         NUMERIC employer_match_percentage
     }
 
-    employee_pension_enrollments {
+    EmployeePensionEnrollments {
         SERIAL enrollment_id PK
         INTEGER employee_id FK
         INTEGER plan_id FK
@@ -94,7 +94,7 @@ erDiagram
         DATE enrollment_date
     }
 
-    payroll_records {
+    PayrollRecords {
         SERIAL payroll_record_id PK
         INTEGER employee_id FK
         INTEGER pay_period_id FK
@@ -102,7 +102,7 @@ erDiagram
         NUMERIC net_pay
     }
 
-    payroll_details {
+    PayrollDetails {
         SERIAL payroll_detail_id PK
         INTEGER payroll_record_id FK
         INTEGER employee_position_id FK
@@ -110,7 +110,7 @@ erDiagram
         NUMERIC amount
     }
 
-    pension_contributions {
+    PensionContributions {
         SERIAL contribution_id PK
         INTEGER enrollment_id FK
         INTEGER payroll_record_id FK
@@ -118,7 +118,7 @@ erDiagram
         NUMERIC employer_contribution
     }
 
-    employee_personal_details {
+    EmployeePersonalDetails {
         SERIAL personal_details_id PK
         INTEGER employee_id FK
         DATE date_of_birth

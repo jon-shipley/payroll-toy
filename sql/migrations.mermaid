@@ -24,104 +24,104 @@ erDiagram
     EmployeePensionEnrollments ||--o{ PensionContributions : generates
 
     Employees {
-        SERIAL employee_id PK
-        VARCHAR first_name
-        VARCHAR last_name
+        SERIAL employeeId PK
+        VARCHAR firstName
+        VARCHAR lastName
         VARCHAR email
-        DATE hire_date
-        VARCHAR tax_id
+        DATE hireDate
+        VARCHAR taxId
     }
 
     Departments {
-        SERIAL department_id PK
-        VARCHAR department_name
-        VARCHAR cost_center
+        SERIAL departmentId PK
+        VARCHAR departmentName
+        VARCHAR costCenter
     }
 
     Positions {
-        SERIAL position_id PK
+        SERIAL positionId PK
         VARCHAR title
-        VARCHAR pay_grade
-        BOOLEAN is_exempt
+        VARCHAR payGrade
+        BOOLEAN isExempt
     }
 
     EmployeePositions {
-        SERIAL employee_position_id PK
-        INTEGER employee_id FK
-        INTEGER position_id FK
-        INTEGER department_id FK
-        INTEGER manager_id FK
-        BOOLEAN is_primary_position
-        NUMERIC hourly_rate
-        NUMERIC annual_salary
+        SERIAL employeePositionId PK
+        INTEGER employeeId FK
+        INTEGER positionId FK
+        INTEGER departmentId FK
+        INTEGER managerId FK
+        BOOLEAN isPrimaryPosition
+        NUMERIC hourlyRate
+        NUMERIC annualSalary
     }
 
     PayPeriods {
-        SERIAL pay_period_id PK
-        DATE start_date
-        DATE end_date
-        DATE pay_date
-        VARCHAR period_type
+        SERIAL payPeriodId PK
+        DATE startDate
+        DATE endDate
+        DATE payDate
+        VARCHAR periodType
     }
 
     TimeEntries {
-        SERIAL time_entry_id PK
-        INTEGER employee_position_id FK
-        INTEGER pay_period_id FK
-        DATE work_date
-        NUMERIC hours_worked
-        NUMERIC overtime_hours
+        SERIAL timeEntryId PK
+        INTEGER employeePositionId FK
+        INTEGER payPeriodId FK
+        DATE workDate
+        NUMERIC hoursWorked
+        NUMERIC overtimeHours
     }
 
     PensionProviders {
-        SERIAL provider_id PK
-        VARCHAR provider_name
-        VARCHAR provider_code
+        SERIAL providerId PK
+        VARCHAR providerName
+        VARCHAR providerCode
     }
 
     PensionPlans {
-        SERIAL plan_id PK
-        INTEGER provider_id FK
-        VARCHAR plan_name
-        NUMERIC employer_match_percentage
+        SERIAL planId PK
+        INTEGER providerId FK
+        VARCHAR planName
+        NUMERIC employerMatchPercentage
     }
 
     EmployeePensionEnrollments {
-        SERIAL enrollment_id PK
-        INTEGER employee_id FK
-        INTEGER plan_id FK
-        NUMERIC employee_contribution_percentage
-        DATE enrollment_date
+        SERIAL enrollmentId PK
+        INTEGER employeeId FK
+        INTEGER planId FK
+        NUMERIC employeeContributionPercentage
+        DATE enrollmentDate
     }
 
     PayrollRecords {
-        SERIAL payroll_record_id PK
-        INTEGER employee_id FK
-        INTEGER pay_period_id FK
-        NUMERIC gross_pay
-        NUMERIC net_pay
+        SERIAL payrollRecordId PK
+        INTEGER employeeId FK
+        INTEGER payPeriodId FK
+        NUMERIC grossPay
+        NUMERIC netPay
     }
 
     PayrollDetails {
-        SERIAL payroll_detail_id PK
-        INTEGER payroll_record_id FK
-        INTEGER employee_position_id FK
-        VARCHAR earning_type
+        SERIAL payrollDetailId PK
+        INTEGER payrollRecordId FK
+        INTEGER employeePositionId FK
+        VARCHAR earningType
         NUMERIC amount
     }
 
     PensionContributions {
-        SERIAL contribution_id PK
-        INTEGER enrollment_id FK
-        INTEGER payroll_record_id FK
-        NUMERIC employee_contribution
-        NUMERIC employer_contribution
+        SERIAL contributionId PK
+        INTEGER enrollmentId FK
+        INTEGER payrollRecordId FK
+        NUMERIC employeeContribution
+        NUMERIC employerContribution
     }
 
     EmployeePersonalDetails {
-        SERIAL personal_details_id PK
-        INTEGER employee_id FK
-        DATE date_of_birth
-        VARCHAR address_line1
+        SERIAL personalDetailsId PK
+        INTEGER employeeId FK
+        DATE dateOfBirth
+        VARCHAR addressLine1
         VARCHAR city
     }

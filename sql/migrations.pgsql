@@ -1,168 +1,168 @@
 -- Employees table
 CREATE TABLE Employees (
-    employee_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
+    employeeId SERIAL PRIMARY KEY,
+    firstName VARCHAR(50) NOT NULL,
+    lastName VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    hire_date DATE NOT NULL,
-    termination_date DATE,
-    tax_id VARCHAR(20) NOT NULL
+    hireDate DATE NOT NULL,
+    terminationDate DATE,
+    taxId VARCHAR(20) NOT NULL
 );
 
 -- Departments table
 CREATE TABLE Departments (
-    department_id SERIAL PRIMARY KEY,
-    department_name VARCHAR(100) NOT NULL,
-    cost_center VARCHAR(20) NOT NULL
+    departmentId SERIAL PRIMARY KEY,
+    departmentName VARCHAR(100) NOT NULL,
+    costCenter VARCHAR(20) NOT NULL
 );
 
 -- Positions table
 CREATE TABLE Positions (
-    position_id SERIAL PRIMARY KEY,
+    positionId SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    pay_grade VARCHAR(10) NOT NULL,
-    is_exempt BOOLEAN NOT NULL
+    payGrade VARCHAR(10) NOT NULL,
+    isExempt BOOLEAN NOT NULL
 );
 
 -- Employee positions table
 CREATE TABLE EmployeePositions (
-    employee_position_id SERIAL PRIMARY KEY,
-    employee_id INTEGER NOT NULL,
-    position_id INTEGER NOT NULL,
-    department_id INTEGER NOT NULL,
-    manager_id INTEGER,
-    is_primary_position BOOLEAN NOT NULL DEFAULT false,
-    effective_date DATE NOT NULL,
-    end_date DATE,
-    hourly_rate NUMERIC(10,2),
-    annual_salary NUMERIC(12,2),
-    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (position_id) REFERENCES Positions(position_id),
-    FOREIGN KEY (department_id) REFERENCES Departments(department_id),
-    FOREIGN KEY (manager_id) REFERENCES Employees(employee_id)
+    employeePositionId SERIAL PRIMARY KEY,
+    employeeId INTEGER NOT NULL,
+    positionId INTEGER NOT NULL,
+    departmentId INTEGER NOT NULL,
+    managerId INTEGER,
+    isPrimaryPosition BOOLEAN NOT NULL DEFAULT false,
+    effectiveDate DATE NOT NULL,
+    endDate DATE,
+    hourlyRate NUMERIC(10,2),
+    annualSalary NUMERIC(12,2),
+    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId),
+    FOREIGN KEY (positionId) REFERENCES Positions(positionId),
+    FOREIGN KEY (departmentId) REFERENCES Departments(departmentId),
+    FOREIGN KEY (managerId) REFERENCES Employees(employeeId)
 );
 
 -- Pay periods table
 CREATE TABLE PayPeriods (
-    pay_period_id SERIAL PRIMARY KEY,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    pay_date DATE NOT NULL,
-    period_type VARCHAR(20) NOT NULL
+    payPeriodId SERIAL PRIMARY KEY,
+    startDate DATE NOT NULL,
+    endDate DATE NOT NULL,
+    payDate DATE NOT NULL,
+    periodType VARCHAR(20) NOT NULL
 );
 
 -- Time entries table
 CREATE TABLE TimeEntries (
-    time_entry_id SERIAL PRIMARY KEY,
-    employee_position_id INTEGER NOT NULL,
-    pay_period_id INTEGER NOT NULL,
-    work_date DATE NOT NULL,
-    hours_worked NUMERIC(5,2) NOT NULL,
-    overtime_hours NUMERIC(5,2) DEFAULT 0,
-    FOREIGN KEY (employee_position_id) REFERENCES EmployeePositions(employee_position_id),
-    FOREIGN KEY (pay_period_id) REFERENCES PayPeriods(pay_period_id)
+    timeEntryId SERIAL PRIMARY KEY,
+    employeePositionId INTEGER NOT NULL,
+    payPeriodId INTEGER NOT NULL,
+    workDate DATE NOT NULL,
+    hoursWorked NUMERIC(5,2) NOT NULL,
+    overtimeHours NUMERIC(5,2) DEFAULT 0,
+    FOREIGN KEY (employeePositionId) REFERENCES EmployeePositions(employeePositionId),
+    FOREIGN KEY (payPeriodId) REFERENCES PayPeriods(payPeriodId)
 );
 
 -- Pension providers table
 CREATE TABLE PensionProviders (
-    provider_id SERIAL PRIMARY KEY,
-    provider_name VARCHAR(100) NOT NULL,
-    provider_code VARCHAR(50) NOT NULL,
-    contact_email VARCHAR(100),
-    contact_phone VARCHAR(20),
-    reporting_frequency VARCHAR(20) NOT NULL
+    providerId SERIAL PRIMARY KEY,
+    providerName VARCHAR(100) NOT NULL,
+    providerCode VARCHAR(50) NOT NULL,
+    contactEmail VARCHAR(100),
+    contactPhone VARCHAR(20),
+    reportingFrequency VARCHAR(20) NOT NULL
 );
 
 -- Pension plans table
 CREATE TABLE PensionPlans (
-    plan_id SERIAL PRIMARY KEY,
-    provider_id INTEGER NOT NULL,
-    plan_name VARCHAR(100) NOT NULL,
-    plan_reference VARCHAR(50) NOT NULL,
-    minimum_contribution_percentage NUMERIC(5,2),
-    maximum_contribution_percentage NUMERIC(5,2),
-    employer_match_percentage NUMERIC(5,2),
-    employer_match_limit NUMERIC(5,2),
-    FOREIGN KEY (provider_id) REFERENCES PensionProviders(provider_id)
+    planId SERIAL PRIMARY KEY,
+    providerId INTEGER NOT NULL,
+    planName VARCHAR(100) NOT NULL,
+    planReference VARCHAR(50) NOT NULL,
+    minimumContributionPercentage NUMERIC(5,2),
+    maximumContributionPercentage NUMERIC(5,2),
+    employerMatchPercentage NUMERIC(5,2),
+    employerMatchLimit NUMERIC(5,2),
+    FOREIGN KEY (providerId) REFERENCES PensionProviders(providerId)
 );
 
 -- Employee pension enrollments table
 CREATE TABLE EmployeePensionEnrollments (
-    enrollment_id SERIAL PRIMARY KEY,
-    employee_id INTEGER NOT NULL,
-    plan_id INTEGER NOT NULL,
-    employee_contribution_percentage NUMERIC(5,2) NOT NULL,
-    employer_contribution_percentage NUMERIC(5,2) NOT NULL,
-    enrollment_date DATE NOT NULL,
-    opt_out_date DATE,
-    salary_sacrifice BOOLEAN NOT NULL DEFAULT false,
-    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (plan_id) REFERENCES PensionPlans(plan_id)
+    enrollmentId SERIAL PRIMARY KEY,
+    employeeId INTEGER NOT NULL,
+    planId INTEGER NOT NULL,
+    employeeContributionPercentage NUMERIC(5,2) NOT NULL,
+    employerContributionPercentage NUMERIC(5,2) NOT NULL,
+    enrollmentDate DATE NOT NULL,
+    optOutDate DATE,
+    salarySacrifice BOOLEAN NOT NULL DEFAULT false,
+    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId),
+    FOREIGN KEY (planId) REFERENCES PensionPlans(planId)
 );
 
 -- Payroll records table
 CREATE TABLE PayrollRecords (
-    payroll_record_id SERIAL PRIMARY KEY,
-    employee_id INTEGER NOT NULL,
-    pay_period_id INTEGER NOT NULL,
-    gross_pay NUMERIC(12,2) NOT NULL,
-    net_pay NUMERIC(12,2) NOT NULL,
-    total_deductions NUMERIC(12,2) NOT NULL,
-    total_taxes NUMERIC(12,2) NOT NULL,
-    payment_method VARCHAR(20) NOT NULL,
-    payment_status VARCHAR(20) NOT NULL,
-    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (pay_period_id) REFERENCES PayPeriods(pay_period_id)
+    payrollRecordId SERIAL PRIMARY KEY,
+    employeeId INTEGER NOT NULL,
+    payPeriodId INTEGER NOT NULL,
+    grossPay NUMERIC(12,2) NOT NULL,
+    netPay NUMERIC(12,2) NOT NULL,
+    totalDeductions NUMERIC(12,2) NOT NULL,
+    totalTaxes NUMERIC(12,2) NOT NULL,
+    paymentMethod VARCHAR(20) NOT NULL,
+    paymentStatus VARCHAR(20) NOT NULL,
+    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId),
+    FOREIGN KEY (payPeriodId) REFERENCES PayPeriods(payPeriodId)
 );
 
 -- Payroll details table
 CREATE TABLE PayrollDetails (
-    payroll_detail_id SERIAL PRIMARY KEY,
-    payroll_record_id INTEGER NOT NULL,
-    employee_position_id INTEGER NOT NULL,
-    earning_type VARCHAR(50) NOT NULL,
+    payrollDetailId SERIAL PRIMARY KEY,
+    payrollRecordId INTEGER NOT NULL,
+    employeePositionId INTEGER NOT NULL,
+    earningType VARCHAR(50) NOT NULL,
     amount NUMERIC(12,2) NOT NULL,
     hours NUMERIC(5,2),
     rate NUMERIC(10,2),
-    pension_eligible BOOLEAN NOT NULL DEFAULT true,
-    FOREIGN KEY (payroll_record_id) REFERENCES PayrollRecords(payroll_record_id),
-    FOREIGN KEY (employee_position_id) REFERENCES EmployeePositions(employee_position_id)
+    pensionEligible BOOLEAN NOT NULL DEFAULT true,
+    FOREIGN KEY (payrollRecordId) REFERENCES PayrollRecords(payrollRecordId),
+    FOREIGN KEY (employeePositionId) REFERENCES EmployeePositions(employeePositionId)
 );
 
 -- Pension contributions table
 CREATE TABLE PensionContributions (
-    contribution_id SERIAL PRIMARY KEY,
-    enrollment_id INTEGER NOT NULL,
-    payroll_record_id INTEGER NOT NULL,
-    employee_contribution NUMERIC(10,2) NOT NULL,
-    employer_contribution NUMERIC(10,2) NOT NULL,
-    contribution_date DATE NOT NULL,
-    reporting_status VARCHAR(20) NOT NULL,
-    reporting_reference VARCHAR(50),
-    FOREIGN KEY (enrollment_id) REFERENCES EmployeePensionEnrollments(enrollment_id),
-    FOREIGN KEY (payroll_record_id) REFERENCES PayrollRecords(payroll_record_id)
+    contributionId SERIAL PRIMARY KEY,
+    enrollmentId INTEGER NOT NULL,
+    payrollRecordId INTEGER NOT NULL,
+    employeeContribution NUMERIC(10,2) NOT NULL,
+    employerContribution NUMERIC(10,2) NOT NULL,
+    contributionDate DATE NOT NULL,
+    reportingStatus VARCHAR(20) NOT NULL,
+    reportingReference VARCHAR(50),
+    FOREIGN KEY (enrollmentId) REFERENCES EmployeePensionEnrollments(enrollmentId),
+    FOREIGN KEY (payrollRecordId) REFERENCES PayrollRecords(payrollRecordId)
 );
 
 -- HR-specific tables follow the same conversion pattern
 -- Employee personal details table
 CREATE TABLE EmployeePersonalDetails (
-    personal_details_id SERIAL PRIMARY KEY,
-    employee_id INTEGER NOT NULL,
-    date_of_birth DATE NOT NULL,
+    personalDetailsId SERIAL PRIMARY KEY,
+    employeeId INTEGER NOT NULL,
+    dateOfBirth DATE NOT NULL,
     gender VARCHAR(20),
-    marital_status VARCHAR(20),
+    maritalStatus VARCHAR(20),
     nationality VARCHAR(50),
-    address_line1 VARCHAR(100) NOT NULL,
-    address_line2 VARCHAR(100),
+    addressLine1 VARCHAR(100) NOT NULL,
+    addressLine2 VARCHAR(100),
     city VARCHAR(50) NOT NULL,
-    state_province VARCHAR(50),
-    postal_code VARCHAR(20) NOT NULL,
+    stateProvince VARCHAR(50),
+    postalCode VARCHAR(20) NOT NULL,
     country VARCHAR(50) NOT NULL,
-    home_phone VARCHAR(20),
-    mobile_phone VARCHAR(20),
-    emergency_contact_name VARCHAR(100),
-    emergency_contact_phone VARCHAR(20),
-    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id)
+    homePhone VARCHAR(20),
+    mobilePhone VARCHAR(20),
+    emergencyContactName VARCHAR(100),
+    emergencyContactPhone VARCHAR(20),
+    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId)
 );
 
 
@@ -174,7 +174,7 @@ CREATE TABLE taxCodes (
     effectiveFrom DATE NOT NULL,
     effectiveTo DATE,
     isActive BOOLEAN NOT NULL DEFAULT true,
-    FOREIGN KEY (employeeId) REFERENCES Employees(employee_id) ON DELETE CASCADE
+    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId) ON DELETE CASCADE
 );
 
 CREATE INDEX ix_taxCode_employee_active_date

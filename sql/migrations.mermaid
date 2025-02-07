@@ -3,6 +3,7 @@ erDiagram
     Employees ||--o{ EmployeePersonalDetails : has
     Employees ||--o{ EmployeePensionEnrollments : has
     Employees ||--o{ PayrollRecords : has
+    Employees ||--o{ TaxCodes : has
 
     Departments ||--o{ EmployeePositions : has
 
@@ -30,6 +31,15 @@ erDiagram
         VARCHAR email
         DATE hireDate
         VARCHAR taxId
+    }
+
+    TaxCodes {
+        SERIAL taxCodeId PK
+        INTEGER employeeId FK
+        VARCHAR taxCode
+        DATE effectiveFrom
+        DATE effectiveTo
+        BOOLEAN isActive
     }
 
     Departments {

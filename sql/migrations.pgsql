@@ -165,9 +165,23 @@ CREATE TABLE EmployeePersonalDetails (
     FOREIGN KEY (employee_id) REFERENCES Employees(employee_id)
 );
 
--- Additional HR tables (qualifications, training, etc.) would follow the same conversion pattern
+
+-- Tax codes table
+CREATE TABLE taxCodes (
+    taxCodeId SERIAL PRIMARY KEY,
+    employeeId INTEGER NOT NULL,
+    taxCode VARCHAR(20) NOT NULL,
+    effectiveFrom DATE NOT NULL,
+    effectiveTo DATE,
+    isActive BOOLEAN NOT NULL DEFAULT true,
+    FOREIGN KEY (employeeId) REFERENCES Employees(employee_id) ON DELETE CASCADE
+);
+
+CREATE INDEX ix_taxCode_employee_active_date
+ON taxCodes(employeeId, isActive, effectiveFrom);
 
 -- Enable row-level security for sensitive tables
 ALTER TABLE Employees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE EmployeePersonalDetails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE PayrollRecords ENABLE ROW LEVEL SECURITY;
+ALTER TABLE taxCodes ENABLE ROW LEVEL SECURITY;

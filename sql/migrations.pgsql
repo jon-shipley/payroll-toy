@@ -1,5 +1,13 @@
--- Employees table
-CREATE TABLE Employees (
+--
+-- DB Naming rules:
+-- - Tables are singular and start with a capital letter, e.g. Employee, Department, Position
+-- - Columns are in camelCase: e.g. employeeId, departmentName, positionTitle
+-- - Foreign keys are named constraints: E.g. FK_FromTableName_FromColumnName_ToTableName_ToColumnName
+-- - Indexes are named IX_TableName_ColumnName
+--
+
+-- Employee table
+CREATE TABLE Employee (
     employeeId SERIAL PRIMARY KEY,
     firstName VARCHAR(50) NOT NULL,
     lastName VARCHAR(50) NOT NULL,
@@ -9,23 +17,23 @@ CREATE TABLE Employees (
     taxId VARCHAR(20) NOT NULL
 );
 
--- Departments table
-CREATE TABLE Departments (
+-- Department table
+CREATE TABLE Department (
     departmentId SERIAL PRIMARY KEY,
     departmentName VARCHAR(100) NOT NULL,
     costCenter VARCHAR(20) NOT NULL
 );
 
--- Positions table
-CREATE TABLE Positions (
+-- Position table
+CREATE TABLE Position (
     positionId SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     payGrade VARCHAR(10) NOT NULL,
     isExempt BOOLEAN NOT NULL
 );
 
--- Employee positions table
-CREATE TABLE EmployeePositions (
+-- EmployeePosition table
+CREATE TABLE EmployeePosition (
     employeePositionId SERIAL PRIMARY KEY,
     employeeId INTEGER NOT NULL,
     positionId INTEGER NOT NULL,
@@ -36,14 +44,14 @@ CREATE TABLE EmployeePositions (
     endDate DATE,
     hourlyRate NUMERIC(10,2),
     annualSalary NUMERIC(12,2),
-    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId),
-    FOREIGN KEY (positionId) REFERENCES Positions(positionId),
-    FOREIGN KEY (departmentId) REFERENCES Departments(departmentId),
-    FOREIGN KEY (managerId) REFERENCES Employees(employeeId)
+    CONSTRAINT FK_EmployeePosition_employeeId_Employee_employeeId FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    CONSTRAINT FK_EmployeePosition_positionId_Position_positionId FOREIGN KEY (positionId) REFERENCES Position(positionId),
+    CONSTRAINT FK_EmployeePosition_departmentId_Department_departmentId FOREIGN KEY (departmentId) REFERENCES Department(departmentId),
+    CONSTRAINT FK_EmployeePosition_managerId_Employee_employeeId FOREIGN KEY (managerId) REFERENCES Employee(employeeId)
 );
 
--- Pay periods table
-CREATE TABLE PayPeriods (
+-- PayPeriod table
+CREATE TABLE PayPeriod (
     payPeriodId SERIAL PRIMARY KEY,
     startDate DATE NOT NULL,
     endDate DATE NOT NULL,
@@ -51,20 +59,20 @@ CREATE TABLE PayPeriods (
     periodType VARCHAR(20) NOT NULL
 );
 
--- Time entries table
-CREATE TABLE TimeEntries (
+-- TimeEntry table
+CREATE TABLE TimeEntry (
     timeEntryId SERIAL PRIMARY KEY,
     employeePositionId INTEGER NOT NULL,
     payPeriodId INTEGER NOT NULL,
     workDate DATE NOT NULL,
     hoursWorked NUMERIC(5,2) NOT NULL,
     overtimeHours NUMERIC(5,2) DEFAULT 0,
-    FOREIGN KEY (employeePositionId) REFERENCES EmployeePositions(employeePositionId),
-    FOREIGN KEY (payPeriodId) REFERENCES PayPeriods(payPeriodId)
+    CONSTRAINT FK_TimeEntry_employeePositionId_EmployeePosition_employeePositionId FOREIGN KEY (employeePositionId) REFERENCES EmployeePosition(employeePositionId),
+    CONSTRAINT FK_TimeEntry_payPeriodId_PayPeriod_payPeriodId FOREIGN KEY (payPeriodId) REFERENCES PayPeriod(payPeriodId)
 );
 
--- Pension providers table
-CREATE TABLE PensionProviders (
+-- PensionProvider table
+CREATE TABLE PensionProvider (
     providerId SERIAL PRIMARY KEY,
     providerName VARCHAR(100) NOT NULL,
     providerCode VARCHAR(50) NOT NULL,
@@ -73,8 +81,8 @@ CREATE TABLE PensionProviders (
     reportingFrequency VARCHAR(20) NOT NULL
 );
 
--- Pension plans table
-CREATE TABLE PensionPlans (
+-- PensionPlan table
+CREATE TABLE PensionPlan (
     planId SERIAL PRIMARY KEY,
     providerId INTEGER NOT NULL,
     planName VARCHAR(100) NOT NULL,
@@ -83,11 +91,11 @@ CREATE TABLE PensionPlans (
     maximumContributionPercentage NUMERIC(5,2),
     employerMatchPercentage NUMERIC(5,2),
     employerMatchLimit NUMERIC(5,2),
-    FOREIGN KEY (providerId) REFERENCES PensionProviders(providerId)
+    CONSTRAINT FK_PensionPlan_providerId_PensionProvider_providerId FOREIGN KEY (providerId) REFERENCES PensionProvider(providerId)
 );
 
--- Employee pension enrollments table
-CREATE TABLE EmployeePensionEnrollments (
+-- EmployeePensionEnrollment table
+CREATE TABLE EmployeePensionEnrollment (
     enrollmentId SERIAL PRIMARY KEY,
     employeeId INTEGER NOT NULL,
     planId INTEGER NOT NULL,
@@ -96,12 +104,12 @@ CREATE TABLE EmployeePensionEnrollments (
     enrollmentDate DATE NOT NULL,
     optOutDate DATE,
     salarySacrifice BOOLEAN NOT NULL DEFAULT false,
-    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId),
-    FOREIGN KEY (planId) REFERENCES PensionPlans(planId)
+    CONSTRAINT FK_EmployeePensionEnrollment_employeeId_Employee_employeeId FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    CONSTRAINT FK_EmployeePensionEnrollment_planId_PensionPlan_planId FOREIGN KEY (planId) REFERENCES PensionPlan(planId)
 );
 
--- Payroll records table
-CREATE TABLE PayrollRecords (
+-- PayrollRecord table
+CREATE TABLE PayrollRecord (
     payrollRecordId SERIAL PRIMARY KEY,
     employeeId INTEGER NOT NULL,
     payPeriodId INTEGER NOT NULL,
@@ -111,12 +119,12 @@ CREATE TABLE PayrollRecords (
     totalTaxes NUMERIC(12,2) NOT NULL,
     paymentMethod VARCHAR(20) NOT NULL,
     paymentStatus VARCHAR(20) NOT NULL,
-    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId),
-    FOREIGN KEY (payPeriodId) REFERENCES PayPeriods(payPeriodId)
+    CONSTRAINT FK_PayrollRecord_employeeId_Employee_employeeId FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    CONSTRAINT FK_PayrollRecord_payPeriodId_PayPeriod_payPeriodId FOREIGN KEY (payPeriodId) REFERENCES PayPeriod(payPeriodId)
 );
 
--- Payroll details table
-CREATE TABLE PayrollDetails (
+-- PayrollDetail table
+CREATE TABLE PayrollDetail (
     payrollDetailId SERIAL PRIMARY KEY,
     payrollRecordId INTEGER NOT NULL,
     employeePositionId INTEGER NOT NULL,
@@ -125,12 +133,12 @@ CREATE TABLE PayrollDetails (
     hours NUMERIC(5,2),
     rate NUMERIC(10,2),
     pensionEligible BOOLEAN NOT NULL DEFAULT true,
-    FOREIGN KEY (payrollRecordId) REFERENCES PayrollRecords(payrollRecordId),
-    FOREIGN KEY (employeePositionId) REFERENCES EmployeePositions(employeePositionId)
+    CONSTRAINT FK_PayrollDetail_payrollRecordId_PayrollRecord_payrollRecordId FOREIGN KEY (payrollRecordId) REFERENCES PayrollRecord(payrollRecordId),
+    CONSTRAINT FK_PayrollDetail_employeePositionId_EmployeePosition_employeePositionId FOREIGN KEY (employeePositionId) REFERENCES EmployeePosition(employeePositionId)
 );
 
--- Pension contributions table
-CREATE TABLE PensionContributions (
+-- PensionContribution table
+CREATE TABLE PensionContribution (
     contributionId SERIAL PRIMARY KEY,
     enrollmentId INTEGER NOT NULL,
     payrollRecordId INTEGER NOT NULL,
@@ -139,13 +147,12 @@ CREATE TABLE PensionContributions (
     contributionDate DATE NOT NULL,
     reportingStatus VARCHAR(20) NOT NULL,
     reportingReference VARCHAR(50),
-    FOREIGN KEY (enrollmentId) REFERENCES EmployeePensionEnrollments(enrollmentId),
-    FOREIGN KEY (payrollRecordId) REFERENCES PayrollRecords(payrollRecordId)
+    CONSTRAINT FK_PensionContribution_enrollmentId_EmployeePensionEnrollment_enrollmentId FOREIGN KEY (enrollmentId) REFERENCES EmployeePensionEnrollment(enrollmentId),
+    CONSTRAINT FK_PensionContribution_payrollRecordId_PayrollRecord_payrollRecordId FOREIGN KEY (payrollRecordId) REFERENCES PayrollRecord(payrollRecordId)
 );
 
--- HR-specific tables follow the same conversion pattern
--- Employee personal details table
-CREATE TABLE EmployeePersonalDetails (
+-- EmployeePersonalDetail table
+CREATE TABLE EmployeePersonalDetail (
     personalDetailsId SERIAL PRIMARY KEY,
     employeeId INTEGER NOT NULL,
     dateOfBirth DATE NOT NULL,
@@ -162,26 +169,25 @@ CREATE TABLE EmployeePersonalDetails (
     mobilePhone VARCHAR(20),
     emergencyContactName VARCHAR(100),
     emergencyContactPhone VARCHAR(20),
-    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId)
+    CONSTRAINT FK_EmployeePersonalDetail_employeeId_Employee_employeeId FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
 );
 
-
--- Tax codes table
-CREATE TABLE taxCodes (
+-- TaxCode table
+CREATE TABLE TaxCode (
     taxCodeId SERIAL PRIMARY KEY,
     employeeId INTEGER NOT NULL,
     taxCode VARCHAR(20) NOT NULL,
     effectiveFrom DATE NOT NULL,
     effectiveTo DATE,
     isActive BOOLEAN NOT NULL DEFAULT true,
-    FOREIGN KEY (employeeId) REFERENCES Employees(employeeId) ON DELETE CASCADE
+    CONSTRAINT FK_TaxCode_employeeId_Employee_employeeId FOREIGN KEY (employeeId) REFERENCES Employee(employeeId) ON DELETE CASCADE
 );
 
-CREATE INDEX ix_taxCode_employee_active_date
-ON taxCodes(employeeId, isActive, effectiveFrom);
+CREATE INDEX IX_TaxCode_employeeId_isActive_effectiveFrom
+ON TaxCode(employeeId, isActive, effectiveFrom);
 
 -- Enable row-level security for sensitive tables
-ALTER TABLE Employees ENABLE ROW LEVEL SECURITY;
-ALTER TABLE EmployeePersonalDetails ENABLE ROW LEVEL SECURITY;
-ALTER TABLE PayrollRecords ENABLE ROW LEVEL SECURITY;
-ALTER TABLE taxCodes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE Employee ENABLE ROW LEVEL SECURITY;
+ALTER TABLE EmployeePersonalDetail ENABLE ROW LEVEL SECURITY;
+ALTER TABLE PayrollRecord ENABLE ROW LEVEL SECURITY;
+ALTER TABLE TaxCode ENABLE ROW LEVEL SECURITY;

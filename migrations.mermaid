@@ -1,0 +1,159 @@
+erDiagram
+    Employee ||--o{ EmployeePosition : has
+    Employee ||--o{ EmployeePersonalDetail : has
+    Employee ||--o{ EmployeePensionEnrollment : has
+    Employee ||--o{ PayrollRecord : has
+    Employee ||--o{ TaxCode : has
+
+    Department ||--o{ EmployeePosition : has
+
+    Position ||--o{ EmployeePosition : has
+
+    EmployeePosition ||--o{ TimeEntry : has
+    EmployeePosition ||--o{ PayrollDetail : has
+
+    PayPeriod ||--o{ TimeEntry : contains
+    PayPeriod ||--o{ PayrollRecord : has
+
+    PensionProvider ||--o{ PensionPlan : offers
+
+    PensionPlan ||--o{ EmployeePensionEnrollment : has
+
+    PayrollRecord ||--o{ PayrollDetail : contains
+    PayrollRecord ||--o{ PensionContribution : has
+
+    EmployeePensionEnrollment ||--o{ PensionContribution : generates
+
+    Employee {
+        SERIAL employeeId PK
+        VARCHAR firstName
+        VARCHAR lastName
+        VARCHAR email
+        DATE hireDate
+        DATE terminationDate
+        VARCHAR taxId
+    }
+
+    Department {
+        SERIAL departmentId PK
+        VARCHAR departmentName
+        VARCHAR costCenter
+    }
+
+    Position {
+        SERIAL positionId PK
+        VARCHAR title
+        VARCHAR payGrade
+        BOOLEAN isExempt
+    }
+
+    EmployeePosition {
+        SERIAL employeePositionId PK
+        INTEGER employeeId FK
+        INTEGER positionId FK
+        INTEGER departmentId FK
+        INTEGER managerId FK
+        BOOLEAN isPrimaryPosition
+        DATE effectiveDate
+        DATE endDate
+        NUMERIC hourlyRate
+        NUMERIC annualSalary
+    }
+
+    PayPeriod {
+        SERIAL payPeriodId PK
+        DATE startDate
+        DATE endDate
+        DATE payDate
+        VARCHAR periodType
+    }
+
+    TimeEntry {
+        SERIAL timeEntryId PK
+        INTEGER employeePositionId FK
+        INTEGER payPeriodId FK
+        DATE workDate
+        NUMERIC hoursWorked
+        NUMERIC overtimeHours
+    }
+
+    PensionProvider {
+        SERIAL providerId PK
+        VARCHAR providerName
+        VARCHAR providerCode
+        VARCHAR contactEmail
+        VARCHAR reportingFrequency
+    }
+
+    PensionPlan {
+        SERIAL planId PK
+        INTEGER providerId FK
+        VARCHAR planName
+        VARCHAR planReference
+        NUMERIC minimumContributionPercentage
+        NUMERIC employerMatchPercentage
+    }
+
+    EmployeePensionEnrollment {
+        SERIAL enrollmentId PK
+        INTEGER employeeId FK
+        INTEGER planId FK
+        NUMERIC employeeContributionPercentage
+        NUMERIC employerContributionPercentage
+        DATE enrollmentDate
+        DATE optOutDate
+        BOOLEAN salarySacrifice
+    }
+
+    PayrollRecord {
+        SERIAL payrollRecordId PK
+        INTEGER employeeId FK
+        INTEGER payPeriodId FK
+        NUMERIC grossPay
+        NUMERIC netPay
+        NUMERIC totalDeductions
+        NUMERIC totalTaxes
+        VARCHAR paymentStatus
+    }
+
+    PayrollDetail {
+        SERIAL payrollDetailId PK
+        INTEGER payrollRecordId FK
+        INTEGER employeePositionId FK
+        VARCHAR earningType
+        NUMERIC amount
+        NUMERIC hours
+        NUMERIC rate
+        BOOLEAN pensionEligible
+    }
+
+    PensionContribution {
+        SERIAL contributionId PK
+        INTEGER enrollmentId FK
+        INTEGER payrollRecordId FK
+        NUMERIC employeeContribution
+        NUMERIC employerContribution
+        DATE contributionDate
+        VARCHAR reportingStatus
+    }
+
+    EmployeePersonalDetail {
+        SERIAL personalDetailsId PK
+        INTEGER employeeId FK
+        DATE dateOfBirth
+        VARCHAR gender
+        VARCHAR addressLine1
+        VARCHAR city
+        VARCHAR postalCode
+        VARCHAR country
+        VARCHAR emergencyContactName
+    }
+
+    TaxCode {
+        SERIAL taxCodeId PK
+        INTEGER employeeId FK
+        VARCHAR taxCode
+        DATE effectiveFrom
+        DATE effectiveTo
+        BOOLEAN isActive
+    } 
